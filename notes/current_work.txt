@@ -1,5 +1,8 @@
 Services provided:
 
+Present work: Reactive diagnosis.
+Future: Preventive diagnosis and maintenance.
+
 - Track the performance of a fleet of vehicles and diagnose problems with a vehicle's engine, transmission, electrical system, etc. 
   This information can be used to identify vehicles with problems and take corrective actions like recommending repairs before the problems 
   cause significant damage. 
@@ -10,3 +13,5 @@ Services provided:
     schedule predictive maintenance before a problem occurs, or automatically generate repair orders for spare parts.
 For this information to become relevant it has to be able, the system has to transmit the data outside of the vehicle, so APIs
 and other external services can use the data.
+
+"cooperate with the remote center to transmit fault codes and appropriate sensor information" - Song You [https://saemobilus.sae.org/content/2005-01-1428/] 
