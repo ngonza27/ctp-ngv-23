@@ -1,0 +1,12 @@
+Services provided:
+
+- Track the performance of a fleet of vehicles and diagnose problems with a vehicle's engine, transmission, electrical system, etc. 
+  This information can be used to identify vehicles with problems and take corrective actions like recommending repairs before the problems 
+  cause significant damage. 
+- Knowing that the existing system can already get vehicles' information, the DTC information can supplement the Fleet Management System by: 
+  - Warn the driver if a problem is detected 
+  - Provide support to the malfunction notification mechanism (MIL light) by displaying real-time feedback information to drivers. 
+  - Support automated tasks like recalled vehicles so that they can take their vehicles to a dealership to perform the necessary repairs, 
+    schedule predictive maintenance before a problem occurs, or automatically generate repair orders for spare parts.
+For this information to become relevant it has to be able, the system has to transmit the data outside of the vehicle, so APIs
+and other external services can use the data.
