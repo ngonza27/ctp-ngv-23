@@ -1,17 +1,17 @@
 import sys
+import can
 
 
-def get_dtc():
-  print("Data received")
-  return 0
+Bus = can.Bus(interface='socketcan', channel='vcan0', bitrate=500000)
 
-
-def send_data():
-  print("Sending data")
-  return 0
-
-
+def request_data():
+  with Bus as bus:
+    message = can.Message(arbitration_id=123,
+                          data=[0x01, 0x01])
+    bus.send()
+    for message in bus:
+      print(f"{message.arbitration_id:X}: {message.data}")
+    
 if __name__ == "__main__":
-  get_dtc()
-  send_data()
+  request_data()
   sys.exit()
