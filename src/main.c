@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+#include <linux/can.h>
+#include <linux/can/raw.h>
 
 int
 main() {
@@ -40,6 +44,13 @@ main() {
 
   if (write(s, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
     perror("Write");
+    return 1;
+  }
+
+  nbytes = read(s, &frame, sizeof(struct can_frame));
+
+  if (nbytes < 0) {
+    perror("can raw socket read");
     return 1;
   }
 }
