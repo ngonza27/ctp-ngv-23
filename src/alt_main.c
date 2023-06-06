@@ -1,13 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <fcntl.h>
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
 int main() {
   // Open the CAN interface.
-  int fd = open("/dev/can0", O_RDWR);
+  int fd = open("/dev/can0", O_RDWR | O_NONBLOCK);
   if (fd < 0) {
     perror("open");
     return 1;
@@ -29,16 +35,26 @@ int main() {
     .data = {0x02, 0x01, 0x0C, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC},
   };
   if (write(fd, &frame, sizeof(frame)) < 0) {
-    perror("write");
-    return 1;
+    if (errno == EAGAIN) {
+      printf("No data available.\n");
+      return 0;
+    } else {
+      perror("write");
+      return 1;
+    }
   }
 
   // Receive the response message.
   struct can_frame response;
   int nread = read(fd, &response, sizeof(response));
   if (nread < 0) {
-    perror("read");
-    return 1;
+    if (errno == EAGAIN) {
+      printf("No data available.\n");
+      return 0;
+    } else {
+      perror("read");
+      return 1;
+    }
   }
 
   // Check if the response message is from the expected sender.

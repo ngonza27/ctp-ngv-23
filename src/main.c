@@ -1,23 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-int
-main() {
+int main() {
   int s;
   struct ifreq ifr;
-  struct sockaddr_can addr;
+  structy sockaddr_can addr;
   struct can_frame frame;
 
-  
+
   if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
     perror("Socket");
-    return 1;
+    return 1; 
   }
-  strcpy(ifr.ifr_name, "vcan0" );
+
+  strcpy(ifr.ifr_name, "vcan0");
   ioctl(s, SIOCGIFINDEX, &ifr);
 
   addr.can_family = AF_CAN;
@@ -28,19 +33,24 @@ main() {
     return 1;
   }
 
-  struct can_frame frame = {
-    .can_id = 0x7DF,
-    .can_dlc = 8,
-    .data = {0x02, 0x01, 0x0C, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC},
-  };
-  
+  frame.can_id = 0x7DF;
+  frame.can_dlc = 8;
+  frame.data[0] = 0x02;
+  frame.data[1] = 0x01;
+  frame.data[2] = 0x0C;
+  frame.data[3] = 0xCC;
+  frame.data[4] = 0xCC;
+  frame.data[5] = 0xCC;
+  frame.data[6] = 0xCC;
+  frame.data[7] = 0xCC;
+
   if (write(s, &frame, sizeof(frame)) < 0) {
     perror("Write");
     return 1;
   }
 
   struct can_frame response;
-  int nread = read(fd, &response, sizeof(response));
+  int nread = read(s, &response, sizeof(response));
   if (nread < 0) {
     perror("read");
     return 1;
