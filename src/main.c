@@ -3,35 +3,17 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 #include <net/if.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
+#define TIME_TO_WAIT 1 /*one second*/
 
-int main() {
-  int s;
-  struct ifreq ifr;
-  struct sockaddr_can addr;
+int get_can_data(int s) {
   struct can_frame frame;
-
-
-  if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
-    perror("Socket");
-    return 1; 
-  }
-
-  strcpy(ifr.ifr_name, "vcan0");
-  ioctl(s, SIOCGIFINDEX, &ifr);
-
-  addr.can_family = AF_CAN;
-  addr.can_ifindex = ifr.ifr_ifindex;
-
-  if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-    perror("Bind");
-    return 1;
-  }
 
   frame.can_id = 0x7DF;
   frame.can_dlc = 8;
@@ -73,7 +55,29 @@ int main() {
 
   printf("Vehicle speed: %d km/h\n", response.data[0]);
 
-  close(s);
+  return 0;
+}
 
+
+int main() {
+  int s;
+  clock_t last = clock();
+  while(1){
+    if (clock() >= (last + TIME_TO_WAIT*CLOCKS_PER_SEC)){
+      s = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+      if (s < 0) {
+        perror("Socket");
+        return 1;
+      }
+
+      if (get_can_data(s) != 0) {
+        close(s);
+        return 1;
+      }
+
+      close(s);
+      last = clock();
+    }
+  }
   return 0;
 }
