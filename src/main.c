@@ -12,6 +12,18 @@
 #include <linux/can/raw.h>
 #define TIME_TO_WAIT 1 /*one second*/
 
+/*
+Makefile:
+https://www.includehelp.com/c-programming-questions/what-is-makefile.aspx
+
+Call functions from other files:
+https://riptutorial.com/c/example/3250/calling-a-function-from-another-c-file
+
+SocketCAN:
+https://www.beyondlogic.org/example-c-socketcan-code/
+https://www.can-cia.org/fileadmin/resources/documents/proceedings/2012_kleine-budde.pdf
+*/
+
 int get_can_data(int s) {
   struct can_frame frame;
 
