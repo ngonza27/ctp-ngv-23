@@ -45,7 +45,7 @@ int main() {
   frame.data[1] = 0x0D;
   memset(frame.data + 2, 0xCC, 6);
   // Send the frame
-  if (write(s, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
+  if (send(s, &frame, sizeof(struct can_frame), 0) != sizeof(struct can_frame)) {
     perror("write");
     exit(1);
   }
