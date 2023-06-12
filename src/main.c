@@ -20,8 +20,10 @@ Call functions from other files:
 https://riptutorial.com/c/example/3250/calling-a-function-from-another-c-file
 
 SocketCAN:
+https://www.kernel.org/doc/Documentation/networking/can.txt
 https://www.beyondlogic.org/example-c-socketcan-code/
 https://www.can-cia.org/fileadmin/resources/documents/proceedings/2012_kleine-budde.pdf
+https://github.com/limengdu/Seeed_reTerminal_Bridge_CAN_exmaple/blob/990edef62448d8e9780657e6ab76250ac18e4045/cantransmit.c#L28
 
 CANid = 7DF
 #bytes(dlc) = 02
