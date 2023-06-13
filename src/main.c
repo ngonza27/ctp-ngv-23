@@ -16,6 +16,9 @@
 Makefile:
 https://www.includehelp.com/c-programming-questions/what-is-makefile.aspx
 
+Structures:
+https://www.geeksforgeeks.org/structures-c/
+
 Call functions from other files:
 https://riptutorial.com/c/example/3250/calling-a-function-from-another-c-file
 
