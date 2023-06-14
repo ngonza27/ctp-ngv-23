@@ -43,11 +43,12 @@ int setup_socket() {
 int main() {
   int socket_id = setup_socket();
   //int socket_id1 = setup_socket();
-  int length = 8;
-  int data[8] = {0x01, 0x0D, 0xFF, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D};
+  int length = 7; // [#bytes, mode, PID, A, B, C, D]
+  int data[7] = {0x01, 0x0D, 0xFF, 0x0D, 0x0D, 0x0D, 0x0D};
   
-  send_obd_message(socket_id, data, length);
-  
+  //send_obd_message(socket_id, data, length);
+  receive_obd_message(socket_id);
+
   // Close the socket
   if (close(socket_id) < 0) {
 		perror("Close");
