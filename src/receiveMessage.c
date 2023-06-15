@@ -3,11 +3,12 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 
 // int service_one(__u8 data[], int length);
 // int service_two(__u8 data[], int length);
-int service_three(int s);
+unsigned int * service_three(int s);
 //int service_seven(__u8 data[], int length);
 
 int receive_obd_message(int s) {
@@ -25,7 +26,10 @@ int receive_obd_message(int s) {
 	int service = frame.data[1];
 	int length = frame.can_dlc;
 
-	service_three(s);
+	unsigned int *detected_DTC = service_three(s);
+	for (int i=0; i < 10; ++i){
+		printf("DTC LIST: %02X\n", detected_DTC[i]);
+	}
 
 	// switch (service) {
 	// 	case 65: // Service 01

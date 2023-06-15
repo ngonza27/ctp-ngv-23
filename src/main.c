@@ -10,6 +10,11 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+
+/*
+  El codigo prinicpal tiene que ser un ciclo que siempre este leyendo del bus CAN y lo unico que hace es filtrar toda la informacion.
+*/
+
 int send_obd_message(int s, int data[], int length);
 int receive_obd_message(int s);
 
@@ -51,8 +56,8 @@ int main() {
 
   // Close the socket
   if (close(socket_id) < 0) {
-		perror("Close");
-		return 1;
+		perror("Error closing the Socket");
+		return EXIT_FAILURE;
 	}
 
   return 0;
