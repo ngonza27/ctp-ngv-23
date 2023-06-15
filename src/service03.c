@@ -5,16 +5,17 @@
 #include <sys/socket.h>
 
 int service_three(int s) {
+	int nbytes;
 	struct can_frame frame;
 	while (1) {
-		if (receive_can_frame(s, &frame) == -1) {
+		if ((nbytes = recv(s, &frame, sizeof(struct can_frame), 0)) == -1) {
 			close(s);
 			perror("Error receiving OBD-II CAN message\n");
 			return EXIT_FAILURE;
 		}
 		
 		// Check if the received frame contains diagnostic trouble codes
-		if (frame.can_id == 0x7E8 && frame.can_dlc > 0) {
+		if (frame.can_id == 0x7E8 && frame.can_dlc > 0 && frame.data[1] == 0x43) {
 			int num_dtc = frame.data[1] >> 4;  // Number of DTCs reported in this frame
 			
 			// Process the DTCs reported in this frame
