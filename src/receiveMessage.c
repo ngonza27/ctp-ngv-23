@@ -7,9 +7,9 @@
 
 
 // int service_one(__u8 data[], int length);
-// int service_two(__u8 data[], int length);
-unsigned int * service_three(int s);
-//int service_seven(__u8 data[], int length);
+//unsigned int * service_two(int s, __u8 data[], int length);
+unsigned int * service_three(int s, __u8 data[], int length);
+//unsigned int * service_seven(int s, __u8 data[], int length);
 
 int receive_obd_message(int s) {
   int nbytes;
@@ -23,31 +23,45 @@ int receive_obd_message(int s) {
 		return EXIT_FAILURE;
 	}
 
-	int service = frame.data[1];
+	int service = frame.data[0];
 	int length = frame.can_dlc;
 
-	unsigned int *detected_DTC = service_three(s);
-	for (int i=0; i < 10; ++i){
-		printf("DTC LIST: %02X\n", detected_DTC[i]);
+	if (frame.can_id == 0x7E8 && length > 0) {
+		printf("entro al switch case con servicio %d", service);
+		switch (service) {
+			case 0x41: // Service 01
+				// int mil_is_on = service_one(frame.data, length);
+				// if (mil_is_on) {
+				// 	perror("Vehicle Error Detected\n");
+				// 	return 1;
+				// }
+				break;
+			case 0x42: // Service 02
+				printf("Entro al service02");
+				unsigned int *detected_s2 = service_three(s, frame.data, length);
+				for (int i=0; i < 10; ++i){
+					printf("DTC LIST: %02X\n", detected_s2[i]);
+				}
+				break;
+			case 0x43: // Service 03
+				unsigned int *detected_s3 = service_three(s, frame.data, length);
+				for (int i=0; i < 10; ++i){
+					printf("DTC LIST: %02X\n", detected_s3[i]);
+				}
+				break;
+			case 0x47: // Service 07
+				unsigned int *detected_s7 = service_three(s, frame.data, length);
+				for (int i=0; i < 10; ++i){
+					printf("DTC LIST: %02X\n", detected_s7[i]);
+				}
+				break;
+			default:
+				printf("Service not supported");
+				break;
+		}
+	}	else {
+		printf("Uninterested ID or no payload");
 	}
-
-	// switch (service) {
-	// 	case 65: // Service 01
-	// 		int mil_is_on = service_one(frame.data, length);
-	// 		if (mil_is_on) {
-	// 			perror("Vehicle Error Detected\n");
-	// 			return 1;
-	// 		}
-	// 		break;
-	// 	case 66: // Service 02
-	// 		break;
-	// 	case 67: // Service 03
-	// 		service_three(frame.data, length);
-	// 		break;
-	// 	case 71: // Service 07
-	// 		service_seven(frame.data, length);
-	// 		break;
-	// }
 
 	printf("\r\n");
   return 0;
