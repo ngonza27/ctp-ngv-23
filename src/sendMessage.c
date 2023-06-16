@@ -4,10 +4,12 @@
 #include <linux/can/raw.h>
 #include <sys/socket.h>
 
+#define CAN_ID_S 0x7DF
+
 int send_obd_message(int s, int *data, int length) {
   struct can_frame frame;
 
-  frame.can_id = 0x7DF; // Set the frame ID
+  frame.can_id = CAN_ID_S; // Set the frame ID
   frame.can_dlc = length; // Set the frame DLC
   for(int i = 0; i < length; ++i){ // Set the frame DATA
     frame.data[i] = data[i];

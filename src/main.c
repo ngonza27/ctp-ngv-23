@@ -10,6 +10,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+#define CAN_INTERFACE "vcan0"
 
 /*
   El codigo prinicpal tiene que ser un ciclo que siempre este leyendo del bus CAN y lo unico que hace es filtrar toda la informacion.
@@ -29,19 +30,21 @@ int setup_socket() {
     exit(1);
   }
 
-  strcpy(ifr.ifr_name, "vcan0" );
+  // Bind the socket to the vcan0 interface
+  strcpy(ifr.ifr_name, CAN_INTERFACE);
   ioctl(s, SIOCGIFINDEX, &ifr);
 
-  // Bind the socket to the vcan0 interface
   memset(&addr, 0, sizeof(addr));
   addr.can_family = AF_CAN;
   addr.can_ifindex = ifr.ifr_ifindex;
   if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-    printf("Error en el bind!!");
-    perror("bind");
-    exit(1);
+    perror("Bind error");
+    return EXIT_FAILURE;
   }
 
+  // rfilter[0].can_id = IAT_RESPONSE_ID;
+  // rfilter[0].can_mask = CAN_SFF_MASK;
+  // setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
   return s;
 }
 

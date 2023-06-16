@@ -5,6 +5,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define CAN_ID_R 0x7E8
+#define SERVICE_1 0x41
+#define SERVICE_2 0x42
+#define SERVICE_3 0x43
+#define SERVICE_7 0x47
 
 // int service_one(__u8 data[], int length);
 //unsigned int * service_two(int s, __u8 data[], int length);
@@ -26,30 +31,30 @@ int receive_obd_message(int s) {
 	int service = frame.data[0];
 	int length = frame.can_dlc;
 
-	if (frame.can_id == 0x7E8 && length > 0) {
+	if (frame.can_id == CAN_ID_R && length > 0) {
 		printf("entro al switch case con servicio %d", service);
 		switch (service) {
-			case 0x41: // Service 01
+			case SERVICE_1: // Service 01
 				// int mil_is_on = service_one(frame.data, length);
 				// if (mil_is_on) {
 				// 	perror("Vehicle Error Detected\n");
 				// 	return 1;
 				// }
 				break;
-			case 0x42: // Service 02
+			case SERVICE_2: // Service 02
 				printf("Entro al service02");
 				unsigned int *detected_s2 = service_three(s, frame.data, length);
 				for (int i=0; i < 10; ++i){
 					printf("DTC LIST: %02X\n", detected_s2[i]);
 				}
 				break;
-			case 0x43: // Service 03
+			case SERVICE_3: // Service 03
 				unsigned int *detected_s3 = service_three(s, frame.data, length);
 				for (int i=0; i < 10; ++i){
 					printf("DTC LIST: %02X\n", detected_s3[i]);
 				}
 				break;
-			case 0x47: // Service 07
+			case SERVICE_7: // Service 07
 				unsigned int *detected_s7 = service_three(s, frame.data, length);
 				for (int i=0; i < 10; ++i){
 					printf("DTC LIST: %02X\n", detected_s7[i]);

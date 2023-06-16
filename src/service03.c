@@ -7,6 +7,11 @@
 #include <unistd.h>
 
 #define MAX_DTC_PER_FRAME 3
+#define CAN_ID_R 0x7E8
+#define SERVICE_2 0x42
+#define SERVICE_3 0x43
+#define SERVICE_7 0x47
+
 unsigned int detected_DTC[10];
 
 void extract_DTC(__u8 *data, int *counter, bool *keep_reading, int *total_dtc) {
@@ -39,11 +44,11 @@ unsigned int *service_three(int s, __u8 *data, int length) {
 		// printf("CAN ID: %02X\n", frame.can_id);
 		// printf("CAN DLC: %02X\n", frame.can_dlc);
 		// printf("RESPONSE SID: %02X\n", frame.data[0]);
-		if (frame.can_id == 0x7E8 && frame.can_dlc > 0) {
+		if (frame.can_id == CAN_ID_R && frame.can_dlc > 0) {
 			switch (frame.data[0]) {
-				case 0x43:
-				case 0x42:
-				case 0x47:
+				case SERVICE_2:
+				case SERVICE_3:
+				case SERVICE_7:
 					total_dtc = frame.data[1];  // Number of DTCs reported in this frame
 					// printf("TOTAL DTC: %d\n", total_dtc);
 					extract_DTC(frame.data, &counter, &keep_reading, &total_dtc);
