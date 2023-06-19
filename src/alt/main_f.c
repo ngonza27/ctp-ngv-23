@@ -55,12 +55,25 @@ int setup_socket() {
 int main() {
   int socket_id = setup_socket();
   //int socket_id1 = setup_socket();
-  int length = 7; // [#bytes, mode, PID, A, B, C, D]
-  int data[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
-  
-  //send_obd_message(socket_id, data, length);
-  receive_obd_message(socket_id);
 
+  time_t last_err_t = time(NULL);
+  time_t last_warn_t = time(NULL);
+  while(true) {
+    time_t current_err_t = time(NULL);
+    time_t current_warn_t = time(NULL);
+    if(current_err_t >= last_err_t + CHECK_ERRORS) {
+      int data[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
+      send_obd_message(socket_id, data, MSG_LENGTH);
+      receive_obd_message(socket_id);
+      last_err_t = current_err_t;
+    }
+    if(current_warn_t >= last_warn_t + CHECK_WARNINGS) {
+      int data[7] = {0x02, 0x02, 0x02, 0x55, 0x55, 0x55, 0x55};
+      send_obd_message(socket_id, data, MSG_LENGTH);
+      receive_obd_message(socket_id);
+      last_warn_t = current_warn_t;
+    }
+  }
   // Close the socket
   if (close(socket_id) < 0) {
 		perror("Error closing the Socket");
