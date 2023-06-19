@@ -13,7 +13,7 @@
 #define SERVICE_3 0x43
 #define SERVICE_7 0x47
 
-char detected_DTC[10][6];
+char detected_DTC[3][6];
 
 char *decode_dtc(unsigned int *dtc) {
 	unsigned int category =  (*dtc >> 14) & 0x03;
