@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <asm-generic/int-ll64.h>
 
-int service_one(__u8 *data, int length) {
+/**
+ 	@brief Extracts the MIL bit value (A7 bit)
+	@param data represents the raw HEX data on a CAN frame
+	@return value of the MIL bit
+*/
+int service_one(__u8 *data) {
   return data[3] & 1;
 }

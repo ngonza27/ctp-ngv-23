@@ -13,10 +13,15 @@
 #define DTC_TO_PRINT 10
 
 // int service_one(__u8 data[], int length);
-//unsigned int *service_two(int s, __u8 data[], int length);
-char (*service_three(int s, __u8 data[], int length))[6];
-//unsigned int *service_seven(int s, __u8 data[], int length);
+//unsigned int *service_two(int s, __u8 data[]);
+char (*service_three(int s, __u8 data[]))[6];
+//unsigned int *service_seven(int s, __u8 data[]);
 
+/**
+ 	@brief Receives the raw CAN frame information
+	@param s socket where the data is received
+	@return integer representing the need to further call other services
+*/
 int receive_obd_message(int s) {
   int nbytes;
   struct can_frame frame;
@@ -36,39 +41,37 @@ int receive_obd_message(int s) {
 		switch (service) {
 			case SERVICE_1: // Service 01
 				// int mil_is_on = service_one(frame.data, length);
-				// if (mil_is_on) {
-				// 	perror("Vehicle Error Detected\n");
-				// 	return 1;
-				// }
-				break;
+				// return mil_is_on;
+				// break;
 			case SERVICE_2: // Service 02
-				// printf("Entro al service02\n");
-				// char *detected_s2 = (*service_three(s, frame.data, length))[5];
-				// for (int i=0; i < 10; ++i){
+				// printf("Got into service02\n");
+				// char (*detected_s2)[6] = service_three(s, frame.data);
+				// for (int i=0; i < DTC_TO_PRINT; ++i){
 				// 	printf("DTC LIST: %s\n", detected_s2[i]);
 				// }
 				break;
 			case SERVICE_3: // Service 03
-			printf("Entro al service03\n");
-				char (*detected_s3)[6] = service_three(s, frame.data, length);
+				printf("Got into service03\n");
+				char (*detected_s3)[6] = service_three(s, frame.data);
 				for (int i=0; i < DTC_TO_PRINT; ++i){
 					printf("DTC LIST: %s\n", detected_s3[i]);
 				}
 				break;
 			case SERVICE_7: // Service 07
-			// printf("Entro al service07\n");
-			// 	char *detected_s7 = (*service_three(s, frame.data, length))[5];
-			// 	for (int i=0; i < 10; ++i){
+			// printf("Got into service07\n");
+			// 	char (*detected_s7)[6] = service_three(s, frame.data);
+			// 	for (int i=0; i < DTC_TO_PRINT; ++i){
 			// 		printf("DTC LIST: %s\n", detected_s7[i]);
 			// 	}
 				break;
 			default:
+				printf("Service not supported");
+				return 2;
 				break;
 		}
 	}	else {
 		printf("Uninterested ID or no payload");
+		return 2;
 	}
-
-	printf("\r\n");
   return 0;
 }

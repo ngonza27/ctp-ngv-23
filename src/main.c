@@ -17,7 +17,7 @@
 #define MSG_LENGTH 8
 
 /*
-  El codigo prinicpal tiene que ser un ciclo que siempre este leyendo del bus CAN y lo unico que hace es filtrar toda la informacion.
+  The main code has to be a loop that is always reading from the CAN bus and the only thing it does is to filter all the information.
 */
 
 int send_obd_message(int s, int data[], int length);
@@ -30,7 +30,7 @@ int setup_socket() {
 
   // Create a socket
   if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
-    perror("socket");
+    perror("Socket creation error");
     exit(1);
   }
 
@@ -55,12 +55,27 @@ int setup_socket() {
 int main() {
   int socket_id = setup_socket();
   //int socket_id1 = setup_socket();
-  int length = 7; // [#bytes, mode, PID, A, B, C, D]
-  int data[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
+  // [#bytes, mode, PID, A, B, C, D]
+  //  int8_t data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
+  int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
   
-  //send_obd_message(socket_id, data, length);
-  receive_obd_message(socket_id);
+  //send_obd_message(socket_id, data, MSG_LENGTH);
+  int request_error_dtc = receive_obd_message(socket_id);
+  // if(request_error_dtc) {
+  //   int data_s2[7] = {0x02, 0x02, 0x02, 0x55, 0x55, 0x55, 0x55};
+  //   send_obd_message(socket_id, data_s2, MSG_LENGTH);
+  //   receive_obd_message(socket_id);
+  //   // Call another funciton to print the data?
+  //   int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
+  //   send_obd_message(socket_id, data_s3, MSG_LENGTH);
+  //   receive_obd_message(socket_id);
+  // }
 
+  // if(0) {
+  //   int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
+  //   send_obd_message(socket_id, data_s7, MSG_LENGTH);
+  //   receive_obd_message(socket_id);
+  //}
   // Close the socket
   if (close(socket_id) < 0) {
 		perror("Error closing the Socket");
