@@ -8,5 +8,5 @@
 	@return value of the MIL bit
 */
 int service_one(__u8 *data) {
-  return data[3] & 1;
+  return (data[2] >> (sizeof(data[2]) * 8 - 1)) & 1;;
 }

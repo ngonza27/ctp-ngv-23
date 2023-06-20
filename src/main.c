@@ -57,10 +57,10 @@ int main() {
   //int socket_id1 = setup_socket();
   // [#bytes, mode, PID, A, B, C, D]
   //  int8_t data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
-  int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
+  // int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
   
   //send_obd_message(socket_id, data, MSG_LENGTH);
-  int request_error_dtc = receive_obd_message(socket_id);
+  receive_obd_message(socket_id);
   // if(request_error_dtc) {
   //   int data_s2[7] = {0x02, 0x02, 0x02, 0x55, 0x55, 0x55, 0x55};
   //   send_obd_message(socket_id, data_s2, MSG_LENGTH);
@@ -76,7 +76,9 @@ int main() {
   //   send_obd_message(socket_id, data_s7, MSG_LENGTH);
   //   receive_obd_message(socket_id);
   //}
+
   // Close the socket
+  printf("Malfunction code executed successfully");
   if (close(socket_id) < 0) {
 		perror("Error closing the Socket");
 		return EXIT_FAILURE;

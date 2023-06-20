@@ -9,40 +9,12 @@
 
 #define MAX_DTC_PER_FRAME 3
 #define CAN_ID_R 0x7E8
-#define SERVICE_2 0x42
 #define SERVICE_3 0x43
 #define SERVICE_7 0x47
 
 char detected_DTC[3][6];
 
-/**
- 	@brief Decodes the hex value into readable DTC code
-	@param dtc hex number of the reported code
-	@return decoded DTC
-*/
-char *decode_dtc(unsigned int *dtc) {
-	unsigned int category =  (*dtc >> 14) & 0x03;
-	unsigned int is_sae_defined = (*dtc >> 12) & 0x03;
-	unsigned int number = *dtc & 0xFFF;
-	char* dtc_char = (char*)malloc(5 * sizeof(char));
-	switch (category) {
-		case 0:
-			sprintf(dtc_char, "P%d%3X", is_sae_defined,number);
-			break;
-		case 1:
-			sprintf(dtc_char, "C%d%3X", is_sae_defined,number);
-			break;
-		case 2:
-			sprintf(dtc_char, "B%d%3X", is_sae_defined,number);
-			break;
-		case 3:
-			sprintf(dtc_char, "U%d%3X", is_sae_defined,number);
-			break;
-		default:
-			break;
-	}
-	return dtc_char;
-}
+char* decode_dtc(unsigned int *data);
 
 /**
  	@brief Reads the DTCs from the CAN frame
@@ -68,9 +40,9 @@ void extract_DTC(__u8 *data, int *counter, bool *keep_reading, int *total_dtc) {
  	@brief Processes the CAN response for Service03
 	@param s socket where the data is received
 	@param data represents the raw HEX data on a CAN frame
-	@return lsit of decoded DTCs
+	@return list of decoded DTCs
 */
-char (*service_three(int s, __u8 *data))[6] {
+char (*service_three_seven(int s, __u8 *data))[6] {
 	int counter = 0;
 	int total_dtc = data[0];
 	bool keep_reading = false;
@@ -86,7 +58,6 @@ char (*service_three(int s, __u8 *data))[6] {
 		}
 		if (frame.can_id == CAN_ID_R && frame.can_dlc > 0) {
 			switch (frame.data[1]) {
-				case SERVICE_2:
 				case SERVICE_3:
 				case SERVICE_7:
 					total_dtc = frame.data[0];  // Number of DTCs reported in this frame
