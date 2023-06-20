@@ -45,6 +45,7 @@ int receive_obd_message(int s) {
 				char* status = "OFF";
 				status = mil_is_on ? "ON" : status;
 				printf("DTC That caused the freeze frame: %s\n", status);
+				return 2;
 				break;
 			case SERVICE_2: // Service 02
 				printf("Got into service02\n");

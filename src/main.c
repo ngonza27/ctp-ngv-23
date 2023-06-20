@@ -10,6 +10,7 @@
 #include <sys/ioctl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
+#include <pthread.h>
 
 #define CAN_INTERFACE "vcan0"
 #define CHECK_ERRORS 10  /* 10 seconds*/
@@ -52,33 +53,53 @@ int setup_socket() {
   return s;
 }
 
-int main() {
-  int socket_id = setup_socket();
-  //int socket_id1 = setup_socket();
-  // [#bytes, mode, PID, A, B, C, D]
-  //  int8_t data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
-  // int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
-  
-  //send_obd_message(socket_id, data, MSG_LENGTH);
+void* call_service02(int socket_id) {
+  int data_s2[7] = {0x05, 0x02, 0x01, 0x00, 0x02, 0x00, 0x55};
+  send_obd_message(socket_id, data_s2, MSG_LENGTH);
   receive_obd_message(socket_id);
-  // if(request_error_dtc) {
-  //   int data_s2[7] = {0x02, 0x02, 0x02, 0x55, 0x55, 0x55, 0x55};
-  //   send_obd_message(socket_id, data_s2, MSG_LENGTH);
-  //   receive_obd_message(socket_id);
-  //   // Call another funciton to print the data?
-  //   int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
-  //   send_obd_message(socket_id, data_s3, MSG_LENGTH);
-  //   receive_obd_message(socket_id);
-  // }
+}
 
-  // if(0) {
-  //   int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
-  //   send_obd_message(socket_id, data_s7, MSG_LENGTH);
-  //   receive_obd_message(socket_id);
-  //}
+void* call_service03(int socket_id) {
+  int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
+  send_obd_message(socket_id, data_s3, MSG_LENGTH);
+  receive_obd_message(socket_id);
+}
 
-  // Close the socket
-  printf("Malfunction code executed successfully");
+int main() {
+  pthread_t thread1, thread2;
+  int socket_id = setup_socket();
+  receive_obd_message(socket_id); 
+  while(true) {
+    // [#bytes, mode, PID, A, B, C, D]
+    int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
+    send_obd_message(socket_id, data_s1, MSG_LENGTH);
+    int mil_status = receive_obd_message(socket_id);
+
+    if(mil_status == 2) {
+      if (pthread_create(&thread1, NULL, call_service02(socket_id), NULL) != 0) {
+        fprintf(stderr, "Error creating thread 1.\n");
+        return 1;
+      }
+      if (pthread_create(&thread2, NULL, call_service03(socket_id), NULL) != 0) {
+        fprintf(stderr, "Error creating thread 2.\n");
+        return 1;
+      }
+      pthread_join(thread1, NULL);
+      pthread_join(thread2, NULL);
+      
+    } else if (mil_status == 0) {
+      int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
+      send_obd_message(socket_id, data_s7, MSG_LENGTH);
+      receive_obd_message(socket_id);
+    } else {
+      perror("Error transceiveing data");
+      break;
+    }
+    sleep(0.5);
+  }
+  
+  // Close socket
+  printf("Halting program");
   if (close(socket_id) < 0) {
 		perror("Error closing the Socket");
 		return EXIT_FAILURE;
