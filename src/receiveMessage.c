@@ -26,17 +26,23 @@ int receive_obd_message(int s, int service_type) {
   int nbytes;
   struct can_frame frame;
   int service = 0;
-
-	do {
-		nbytes = recv(s, &frame, sizeof(struct can_frame), 0);
-		if (nbytes < 0) {
-			close(s);
-			perror("Error receiving OBD-II CAN message\n");
-			return EXIT_FAILURE;
-		}
-		service = frame.data[1];
+	// do {
+	// 	nbytes = recv(s, &frame, sizeof(struct can_frame), 0);
+	// 	if (nbytes < 0) {
+	// 		close(s);
+	// 		perror("Error receiving OBD-II CAN message\n");
+	// 		return EXIT_FAILURE;
+	// 	}
+	// 	service = frame.data[1];
+	// }
+	// while (service_type != service);
+	nbytes = recv(s, &frame, sizeof(struct can_frame), 0);
+	if (nbytes < 0) {
+		close(s);
+		perror("Error receiving OBD-II CAN message\n");
+		return EXIT_FAILURE;
 	}
-	while (service_type != service);
+	service = frame.data[1];
 	
 	int length = frame.can_dlc;
 	if (frame.can_id == CAN_ID_R && length > 0) {
