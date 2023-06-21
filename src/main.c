@@ -16,13 +16,17 @@
 #define CHECK_ERRORS 10  /* 10 seconds*/
 #define CHECK_WARNINGS 5 /*  5 seconds*/
 #define MSG_LENGTH 8
+#define SERVICE_1 1
+#define SERVICE_2 2
+#define SERVICE_3 3
+#define SERVICE_7 7
 
 /*
   The main code has to be a loop that is always reading from the CAN bus and the only thing it does is to filter all the information.
 */
 
 int send_obd_message(int s, int data[], int length);
-int receive_obd_message(int s);
+int receive_obd_message(int s, int service);
 
 int setup_socket() {
   int s;
@@ -73,20 +77,20 @@ int main() {
     // [#bytes, mode, PID, A, B, C, D]
     int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
     send_obd_message(socket_id, data_s1, MSG_LENGTH);
-    int mil_status = receive_obd_message(socket_id);
+    int mil_status = receive_obd_message(socket_id, SERVICE_1);
 
     if(mil_status == 2) {
       int data_s2[7] = {0x05, 0x02, 0x01, 0x00, 0x02, 0x00, 0x55};
       send_obd_message(socket_id, data_s2, MSG_LENGTH);
-      receive_obd_message(socket_id);
+      receive_obd_message(socket_id, SERVICE_2);
 
       int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
       send_obd_message(socket_id, data_s3, MSG_LENGTH);
-      receive_obd_message(socket_id);
+      receive_obd_message(socket_id, SERVICE_3);
     } else if (mil_status == 0) {
       int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
       send_obd_message(socket_id, data_s7, MSG_LENGTH);
-      receive_obd_message(socket_id);
+      receive_obd_message(socket_id, SERVICE_7);
     } 
     sleep(1);
   }

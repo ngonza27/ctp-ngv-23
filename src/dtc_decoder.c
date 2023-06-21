@@ -9,7 +9,7 @@
 */
 char* decode_dtc(unsigned int *dtc) {
   unsigned int category =  (*dtc >> 14) & 0x03;
-	unsigned int is_sae_defined = (*dtc >> 12) & 0x03;
+	unsigned int is_sae_defined = (*dtc >> 12) & 0x01;
 	unsigned int number = *dtc & 0xFFF;
 	char* dtc_char = (char*)malloc(6 * sizeof(char));
 	switch (category) {

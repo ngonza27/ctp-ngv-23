@@ -19,7 +19,6 @@ int send_obd_message(int s, int *data, int length) {
     perror("Error sending OBD-II CAN message\n");
     exit(1);
   } else {
-    printf("Message sent\n");
     return 0;
   }
 }
