@@ -12,8 +12,9 @@
 #define SERVICE_3 0x43
 #define SERVICE_7 0x47
 
-char detected_DTC[3][6];
 
+char detected_DTC[3][6];
+char nullArray[][6] = {{'\0', '\0', '\0', '\0', '\0', '\0'}};
 char* decode_dtc(unsigned int *data);
 
 /**
@@ -54,7 +55,7 @@ char (*service_three_seven(int s, __u8 *data))[6] {
 		if (recv(s, &frame, sizeof(struct can_frame), 0) == -1) {
 			close(s);
 			perror("Error receiving OBD-II CAN message\n");
-			return (char (*)[6])EXIT_FAILURE;
+			return nullArray;
 		}
 		if (frame.can_id == CAN_ID_R && frame.can_dlc > 0) {
 			switch (frame.data[1]) {
@@ -64,13 +65,12 @@ char (*service_three_seven(int s, __u8 *data))[6] {
 					extract_DTC(frame.data, &counter, &keep_reading, &total_dtc);
 					break;
 				default:
-					printf("Service not supported");
-					return (char (*)[6])EXIT_FAILURE;
-					break; 
+					printf("No more data\n");
+					return nullArray;
 			}
 		} else {
 			printf("Uninterested ID or no payload");
-			return (char (*)[6])EXIT_FAILURE;
+			return nullArray;
 		}
 	}
   return detected_DTC;

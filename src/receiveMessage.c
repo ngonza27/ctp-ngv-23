@@ -56,12 +56,14 @@ int receive_obd_message(int s) {
 			case SERVICE_7: // Service 07
 				printf("Got into service03/07\n");
 				char (*detected_s3)[6] = service_three_seven(s, frame.data);
-				for (int i=0; i < DTC_TO_PRINT; ++i){
-					printf("DTC LIST: %s\n", detected_s3[i]);
+				for (int i=0; i < DTC_TO_PRINT; ++i) {
+					if((detected_s3[i] != NULL) && (*detected_s3[i] != '\0'))	 {
+						printf("DTC LIST: %s\n", detected_s3[i]);
+					}
 				}
 				break;
 			default:
-				printf("Service not supported");
+				printf("Service not supported%2X\n", service);
 				return EXIT_FAILURE;
 				break;
 		}
