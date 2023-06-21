@@ -72,8 +72,8 @@ int send_obd_message(int s, int service) {
 
 	// Fill data array with random values from info[]
 	for (int i = 0; i < length; i++) {
-			int info_index = rand() % (sizeof(info) / sizeof(info[0]));
-			frame.data[i] = info[info_index];		
+		int info_index = rand() % (sizeof(info) / sizeof(info[0]));
+		frame.data[i] = info[info_index];		
 	}
 	
 	switch (service) {
@@ -114,36 +114,35 @@ int receive_obd_message(int s) {
 		return 1;
 	}
 
-		int service = frame.data[1];
-		int length = frame.can_dlc;
-		printf("Received service%2X\n", service);
-		if (frame.can_id == CAN_ID_S && length > 0) {
-			switch (service) {
-				case SERVICE_1_R: // Service 01
-					printf("Respond service1\n");
-					send_obd_message(s, 1);
-					break;
-				case SERVICE_2_R: // Service 02
-					printf("Respond service2\n");
-					send_obd_message(s, 2);
-					break;
-				case SERVICE_3_R: // Service 03
-					printf("Respond service3\n");
-					send_obd_message(s, 3);
-					break;
-				case SERVICE_7_R: // Service 07
-					printf("Respond service4\n");
-					send_obd_message(s, 7);
-					break;
-				default:
-					return 1;
-			}
-		}	else {
-			return 1;
+	int service = frame.data[1];
+	int length = frame.can_dlc;
+	printf("Received service%2X\n", service);
+	if (frame.can_id == CAN_ID_S && length > 0) {
+		switch (service) {
+			case SERVICE_1_R: // Service 01
+				printf("Respond service1\n");
+				send_obd_message(s, 1);
+				break;
+			case SERVICE_2_R: // Service 02
+				printf("Respond service2\n");
+				send_obd_message(s, 2);
+				break;
+			case SERVICE_3_R: // Service 03
+				printf("Respond service3\n");
+				send_obd_message(s, 3);
+				break;
+			case SERVICE_7_R: // Service 07
+				printf("Respond service4\n");
+				send_obd_message(s, 7);
+				break;
+			default:
+				return 1;
 		}
+	}	else {
+		return 1;
+	}
   return 0;
 }
-
 
 int main(int argc, char **argv) {
   int s = setup_socket();
