@@ -6,6 +6,13 @@
 
 #define CAN_ID_S 0x7DF
 
+/**
+ 	@brief Sends the CAN frame information
+	@param s socket where the data is received
+  @param data makes up the frame information
+  @param length determines the number of bytes 
+	@return status of function execution
+*/
 int send_obd_message(int s, int *data, int length) {
   struct can_frame frame;
 
