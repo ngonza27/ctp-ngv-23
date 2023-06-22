@@ -9,28 +9,28 @@ Contact: {s.gariuolo, s.longo, n.gonzalezvallejo.869}@cranfield.ac.uk <br />
 
 
 ## Project structure
-.
-├── assets
-│   ├── current_work.txt
-│   ├── sequence_diagram.png
-│   └── strucutre_diagram.png
-├── README.md
-├── scripts
-│   ├── disable_vcan0.sh
-│   ├── enable_vcan0.sh
-│   └── test_services.txt
-├── src
-│   ├── dtc_decoder.c
-│   ├── main.c
-│   ├── Makefile
-│   ├── receiveMessage.c
-│   ├── sendMessage.c
-│   ├── service01.c
-│   ├── service02.c
-│   └── service0307.c
-└── test
-    ├── can_simulator.c
-    └── Makefile
+.<br />
+├── assets<br />
+│   ├── current_work.txt<br />
+│   ├── sequence_diagram.png<br />
+│   └── strucutre_diagram.png<br />
+├── README.md<br />
+├── scripts<br />
+│   ├── disable_vcan0.sh<br />
+│   ├── enable_vcan0.sh<br />
+│   └── test_services.txt<br />
+├── src<br />
+│   ├── dtc_decoder.c<br />
+│   ├── main.c<br />
+│   ├── Makefile<br />
+│   ├── receiveMessage.c<br />
+│   ├── sendMessage.c<br />
+│   ├── service01.c<br />
+│   ├── service02.c<br />
+│   └── service0307.c<br />
+└── test<br />
+    ├── can_simulator.c<br />
+    └── Makefile<br />
 
 ## How to run
 
@@ -41,7 +41,7 @@ Contact: {s.gariuolo, s.longo, n.gonzalezvallejo.869}@cranfield.ac.uk <br />
 ```
 
 -  Disable the virtual can interface.
-  Note: Check that the script has executable perimissions.
+  Note: Check that the script has executable permissions.
 ```sh
 ./scripts/enable_vcan0.sh
 ```
