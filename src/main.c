@@ -9,7 +9,7 @@
 #include <sys/ioctl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
-#include <pthread.h>
+#include <signal.h>
 
 #define CAN_INTERFACE "vcan0"
 #define MSG_LENGTH 8
@@ -17,9 +17,23 @@
 #define SERVICE_2 0x42
 #define SERVICE_3 0x43
 #define SERVICE_7 0x47
+#define SLEEP_TIME 1
+int socket_id = 0;
 
 int send_obd_message(int s, int data[], int length);
 int receive_obd_message(int s, int service);
+
+static void sig_handler(int _) {
+  (void)_;
+  // Close socket
+  printf("\nHalting program\n");
+  if (close(socket_id) < 0) {
+		perror("Error closing the Socket");
+		exit(EXIT_FAILURE);
+	}
+  exit(EXIT_SUCCESS);
+}
+
 int setup_socket() {
   int s;
   struct sockaddr_can addr;
@@ -49,9 +63,10 @@ int setup_socket() {
   return s;
 }
 
-
+// [#bytes, mode, PID, A, B, C, D]
 int main() {
-  int socket_id = setup_socket();
+  socket_id = setup_socket();
+  signal(SIGINT, sig_handler);
   // receive_obd_message(socket_id); 
   while(true) {
     // [#bytes, mode, PID, A, B, C, D]
@@ -71,16 +86,9 @@ int main() {
       int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
       send_obd_message(socket_id, data_s7, MSG_LENGTH);
       receive_obd_message(socket_id, SERVICE_7);
-    } 
-    sleep(1);
+    }
+    sleep(SLEEP_TIME);
   }
-  
-  // Close socket
-  printf("Halting program\n");
-  if (close(socket_id) < 0) {
-		perror("Error closing the Socket");
-		return EXIT_FAILURE;
-	}
 
-  return 0;
+  return EXIT_SUCCESS;
 }
