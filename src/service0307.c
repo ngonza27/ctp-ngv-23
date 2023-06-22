@@ -67,12 +67,17 @@ char (*service_three_seven(int s, __u8 *data))[6] {
 					extract_DTC(frame.data, &counter, &keep_reading, &total_dtc);
 					break;
 				default:
-					printf("No more data(%d)\n", frame.data[1]);
+					if (total_dtc == 0){
+						printf("No more data(%d)\n", frame.data[1]);
 					return nullArray;
+					} else {
+						continue;
+					}
 			}
 		} else {
-			printf("Uninterested ID or no payload");
-			return nullArray;
+			printf("Uninterested ID or no payload {S3, S7}");
+			continue;
+			// return nullArray;
 		}
 	}
   return detected_DTC;

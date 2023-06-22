@@ -1,3 +1,6 @@
+// [#bytes, mode, PID, A, B, C, D]
+
+
 Programming language: C
 /SocketCAN/
 

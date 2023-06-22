@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <time.h>
 #include <net/if.h>
 #include <stdbool.h>
 #include <sys/socket.h>
@@ -13,21 +12,14 @@
 #include <pthread.h>
 
 #define CAN_INTERFACE "vcan0"
-#define CHECK_ERRORS 10  /* 10 seconds*/
-#define CHECK_WARNINGS 5 /*  5 seconds*/
 #define MSG_LENGTH 8
-#define SERVICE_1 1
-#define SERVICE_2 2
-#define SERVICE_3 3
-#define SERVICE_7 7
-
-/*
-  The main code has to be a loop that is always reading from the CAN bus and the only thing it does is to filter all the information.
-*/
+#define SERVICE_1 0x41
+#define SERVICE_2 0x42
+#define SERVICE_3 0x43
+#define SERVICE_7 0x47
 
 int send_obd_message(int s, int data[], int length);
 int receive_obd_message(int s, int service);
-
 int setup_socket() {
   int s;
   struct sockaddr_can addr;
@@ -57,20 +49,8 @@ int setup_socket() {
   return s;
 }
 
-// void* call_service02(int socket_id) {
-//   int data_s2[7] = {0x05, 0x02, 0x01, 0x00, 0x02, 0x00, 0x55};
-//   send_obd_message(socket_id, data_s2, MSG_LENGTH);
-//   receive_obd_message(socket_id);
-// }
-
-// void* call_service03(int socket_id) {
-//   int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
-//   send_obd_message(socket_id, data_s3, MSG_LENGTH);
-//   receive_obd_message(socket_id);
-// }
 
 int main() {
-  //pthread_t thread1, thread2;
   int socket_id = setup_socket();
   // receive_obd_message(socket_id); 
   while(true) {
