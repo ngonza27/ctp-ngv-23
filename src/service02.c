@@ -8,7 +8,7 @@ char* decode_dtc(unsigned int *data);
 
 /**
  	@brief Decodes the hex value of the Freeze frame into a readable DTC code
-	@param data Frame sent by the diagnostics conection
+	@param data Frame sent by the diagnostics connection
 	@return Decoded freeze DTC
 */
 char* service_two(__u8 *data) {
