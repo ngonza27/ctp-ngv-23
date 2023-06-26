@@ -20,7 +20,7 @@ char* decode_dtc(unsigned int *data);
 /**
  	@brief Reads the DTCs from the CAN frame
 	@param data represents the raw HEX data on a CAN frame
-	@param counter keeps track of whre to put the processed DTC
+	@param counter keeps track of where to put the processed DTC
 	@param keep_reading should keep waiting for CAN messages?
 	@param total_dtc number of DTC on the current CAN frame
 	@return void
@@ -44,7 +44,6 @@ void extract_DTC(__u8 *data, int *counter, bool *keep_reading, int *total_dtc) {
 	@return list of decoded DTCs
 */
 char (*service_three_seven(int s, __u8 *data))[6] {
-	//printf("Receiving [%2X,%2X,%2X,%2X,%2X,%2X,%2X,%2X]\n",data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
 	int counter = 0;
 	int total_dtc = data[0];
 	bool keep_reading = false;
