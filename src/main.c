@@ -18,6 +18,8 @@
 #define SERVICE_3 0x43
 #define SERVICE_7 0x47
 #define SLEEP_TIME 1
+#define TESTING 1
+
 int socket_id = 0;
 
 int send_obd_message(int s, int data[], int length);
@@ -45,7 +47,6 @@ int setup_socket() {
     exit(1);
   }
 
-  // Bind the socket to the vcan0 interface
   strcpy(ifr.ifr_name, CAN_INTERFACE);
   ioctl(s, SIOCGIFINDEX, &ifr);
 
@@ -56,10 +57,6 @@ int setup_socket() {
     perror("Bind error");
     return EXIT_FAILURE;
   }
-
-  // rfilter[0].can_id = IAT_RESPONSE_ID;
-  // rfilter[0].can_mask = CAN_SFF_MASK;
-  // setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
   return s;
 }
 
@@ -67,28 +64,34 @@ int setup_socket() {
 int main() {
   socket_id = setup_socket();
   signal(SIGINT, sig_handler);
-  // receive_obd_message(socket_id); 
-  while(true) {
-    // [#bytes, mode, PID, A, B, C, D]
-    int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
-    send_obd_message(socket_id, data_s1, MSG_LENGTH);
-    int mil_status = receive_obd_message(socket_id, SERVICE_1);
+  if (TESTING){
+    receive_obd_message(socket_id);
+  } else {
+    while(true) {
+      // [#bytes, mode, PID, A, B, C, D]
+      int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
+      send_obd_message(socket_id, data_s1, MSG_LENGTH);
+      int mil_status = receive_obd_message(socket_id, SERVICE_1);
 
-    if(mil_status == 2) {
-      int data_s2[7] = {0x05, 0x02, 0x01, 0x00, 0x02, 0x00, 0x55};
-      send_obd_message(socket_id, data_s2, MSG_LENGTH);
-      receive_obd_message(socket_id, SERVICE_2);
+      if(mil_status == 2) {
+        int data_s2[7] = {0x05, 0x02, 0x01, 0x00, 0x02, 0x00, 0x55};
+        send_obd_message(socket_id, data_s2, MSG_LENGTH);
+        receive_obd_message(socket_id, SERVICE_2);
 
-      int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
-      send_obd_message(socket_id, data_s3, MSG_LENGTH);
-      receive_obd_message(socket_id, SERVICE_3);
-    } else if (mil_status == 0) {
-      int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
-      send_obd_message(socket_id, data_s7, MSG_LENGTH);
-      receive_obd_message(socket_id, SERVICE_7);
+        int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
+        send_obd_message(socket_id, data_s3, MSG_LENGTH);
+        receive_obd_message(socket_id, SERVICE_3);
+      } else if (mil_status == 0) {
+        int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
+        send_obd_message(socket_id, data_s7, MSG_LENGTH);
+        receive_obd_message(socket_id, SERVICE_7);
+      }
+      sleep(SLEEP_TIME);
     }
-    sleep(SLEEP_TIME);
-  }
-
+  }  
+  if (close(socket_id) < 0) {
+		perror("Error closing the Socket");
+		exit(EXIT_FAILURE);
+	}
   return EXIT_SUCCESS;
 }
