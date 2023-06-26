@@ -58,7 +58,6 @@ char (*service_three_seven(int s, __u8 *data))[6] {
 			perror("Error receiving OBD-II CAN message\n");
 			return nullArray;
 		}
-		printf("%d %d\n",frame.data[2], frame.data[1]);
 		if (frame.can_id == CAN_ID_R && frame.can_dlc > 0) {
 			switch (frame.data[1]) {
 				case SERVICE_3:
@@ -68,16 +67,17 @@ char (*service_three_seven(int s, __u8 *data))[6] {
 					break;
 				default:
 					if (total_dtc == 0){
-						printf("No more data(%d)\n", frame.data[1]);
-					return nullArray;
+						return nullArray;
 					} else {
 						continue;
 					}
 			}
 		} else {
-			printf("Uninterested ID or no payload {S3, S7}");
-			continue;
-			// return nullArray;
+			if (total_dtc == 0){
+				return nullArray;
+			} else {
+				continue;
+			}
 		}
 	}
   return detected_DTC;

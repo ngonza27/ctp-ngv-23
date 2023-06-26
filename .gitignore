@@ -3,3 +3,4 @@
 src/main
 sketches/*
 src/*.o
+test/*.o
