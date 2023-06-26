@@ -65,7 +65,8 @@ int main() {
   socket_id = setup_socket();
   signal(SIGINT, sig_handler);
   if (TESTING){
-    receive_obd_message(socket_id);
+    printf("System running on Testing mode\n");
+    receive_obd_message(socket_id, SERVICE_3);
   } else {
     while(true) {
       // [#bytes, mode, PID, A, B, C, D]
