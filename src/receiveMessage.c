@@ -26,7 +26,7 @@ char (*service_three_seven(int s, __u8 data[]))[6];
 int receive_obd_message(int s, int service_type) {
 	FILE *fp;
   fp = fopen("History.log", "a+");
-	if (fp == NULL) { return 1; }
+	if (fp == NULL) { return EXIT_FAILURE; }
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
   int nbytes;
