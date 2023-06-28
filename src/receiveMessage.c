@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 #define CAN_ID_R 0x7E8
 #define SERVICE_1 0x41
@@ -23,6 +24,11 @@ char (*service_three_seven(int s, __u8 data[]))[6];
 	@return function execution status
 */
 int receive_obd_message(int s, int service_type) {
+	FILE *fp;
+  fp = fopen("History.log", "a+");
+	if (fp == NULL) { return EXIT_FAILURE; }
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
   int nbytes;
   struct can_frame frame;
   int service = 0;
@@ -37,7 +43,7 @@ int receive_obd_message(int s, int service_type) {
 		if ((frame.can_id == CAN_ID_R) && (frame.can_dlc > 0) && (service == service_type)) {
 			break;
 		} else {
-			printf("Uninterested ID or no payload\n");
+			printf("Uninterested ID or no payloads\n");
 			continue;
 		}
 	}
@@ -54,23 +60,23 @@ int receive_obd_message(int s, int service_type) {
 			}
 		case SERVICE_2: // Service 02
 			char* dtc = service_two(frame.data);
-			printf("DTC That caused the freeze frame: %s\n", dtc);
+			fprintf(fp, "%d-%02d-%02d %02d:%02d:%02d > DTC That caused the freeze frame: %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, dtc);
 			break;
 		case SERVICE_3: // Service 03
 			char (*detected_s3)[6] = service_three_seven(s, frame.data);
-			printf("ERRORS: \n");
+			fprintf(fp,"%d-%02d-%02d %02d:%02d:%02d > ERRORS:\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			for (int i=0; i < DTC_TO_PRINT; ++i) {
 				if((detected_s3[i] != NULL) && (*detected_s3[i] != '\0'))	 {
-					printf("DTC: %s\n", detected_s3[i]);
+					fprintf(fp, "                    > DTC: %s\n",detected_s3[i]);
 				}
 			}
 			break;
 		case SERVICE_7: // Service 07
 			char (*detected_s7)[6] = service_three_seven(s, frame.data);
-			printf("WARNINGS: \n");
+			fprintf(fp, "%d-%02d-%02d %02d:%02d:%02d> WARNINGS: \n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			for (int i=0; i < DTC_TO_PRINT; ++i) {
 				if((detected_s7[i] != NULL) && (*detected_s7[i] != '\0'))	 {
-					printf("DTC: %s\n", detected_s7[i]);
+					fprintf(fp, "                    > DTC: %s\n",detected_s7[i]);
 				}
 			}
 			break;
@@ -78,7 +84,7 @@ int receive_obd_message(int s, int service_type) {
 			printf("Service not supported\n");
 			return EXIT_FAILURE;
 	}
-	
+	fclose(fp);
 	service = 0;
   return 0;
 }

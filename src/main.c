@@ -4,12 +4,12 @@
 #include <string.h>
 #include <errno.h>
 #include <net/if.h>
-#include <stdbool.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <signal.h>
+#include <pthread.h>
 
 #define CAN_INTERFACE "vcan0"
 #define MSG_LENGTH 8
@@ -21,13 +21,18 @@
 #define TESTING 1
 
 int socket_id = 0;
+int mil_status;
+struct send_struct {
+    int* data;
+    int socket_id;
+    int length;
+};
 
 int send_obd_message(int s, int data[], int length);
 int receive_obd_message(int s, int service);
 
 static void sig_handler(int _) {
   (void)_;
-  // Close socket
   printf("\nHalting program\n");
   if (close(socket_id) < 0) {
 		perror("Error closing the Socket");
@@ -60,31 +65,60 @@ int setup_socket() {
   return s;
 }
 
+void* send_thread(void* arg) {
+  struct send_struct* params = (struct send_struct*)arg;
+  int* data = params->data;
+  int socket_id = params->socket_id;
+  int length = params->length;
+
+  send_obd_message(socket_id, data, length);
+  return NULL;
+}
+
+void* receive_thread(void* arg) {
+  int* service = (int*)arg;
+  mil_status = receive_obd_message(socket_id, *service);
+  return NULL;
+}
+
+void execute_service(int *data, int socket_id, int service, pthread_t *send_t, pthread_t *receive_t) {
+  struct send_struct params = {data, socket_id, MSG_LENGTH};
+
+    if (pthread_create(send_t, NULL, send_thread, (void*)&params) != 0) {
+      perror("Failed to create send thread");
+      exit(EXIT_FAILURE);
+    }
+
+    if (pthread_create(receive_t, NULL, receive_thread, &service) != 0) {
+      perror("Failed to create receive thread");
+      exit(EXIT_FAILURE);
+    }
+    pthread_join(*send_t, NULL);
+    pthread_join(*receive_t, NULL);
+}
+
 // [#bytes, mode, PID, A, B, C, D]
 int main() {
   socket_id = setup_socket();
   signal(SIGINT, sig_handler);
+  pthread_t send_t, receive_t;
   if (TESTING){
-    receive_obd_message(socket_id);
+    printf("System running on Testing mode\n");
+    receive_obd_message(socket_id, SERVICE_3);
   } else {
-    while(true) {
+    while(1) {
       // [#bytes, mode, PID, A, B, C, D]
       int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
-      send_obd_message(socket_id, data_s1, MSG_LENGTH);
-      int mil_status = receive_obd_message(socket_id, SERVICE_1);
-
+      execute_service(data_s1, socket_id, SERVICE_1, &send_t, &receive_t);
       if(mil_status == 2) {
         int data_s2[7] = {0x05, 0x02, 0x01, 0x00, 0x02, 0x00, 0x55};
-        send_obd_message(socket_id, data_s2, MSG_LENGTH);
-        receive_obd_message(socket_id, SERVICE_2);
+        execute_service(data_s2, socket_id, SERVICE_2, &send_t, &receive_t);
 
         int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
-        send_obd_message(socket_id, data_s3, MSG_LENGTH);
-        receive_obd_message(socket_id, SERVICE_3);
+        execute_service(data_s3, socket_id, SERVICE_3, &send_t, &receive_t);
       } else if (mil_status == 0) {
         int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
-        send_obd_message(socket_id, data_s7, MSG_LENGTH);
-        receive_obd_message(socket_id, SERVICE_7);
+        execute_service(data_s7, socket_id, SERVICE_7, &send_t, &receive_t);
       }
       sleep(SLEEP_TIME);
     }
