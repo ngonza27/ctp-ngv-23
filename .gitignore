@@ -1,6 +1,6 @@
 .vscode/*
 /*.out
-src/main
-sketches/*
 src/*.o
-test/*.o
+src/main
+test/can_simulator
+scripts/run_main.sh
