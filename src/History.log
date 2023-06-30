@@ -4,3 +4,21 @@
                     > DTC: B1143
                     > DTC: U1FFF
                     > DTC: U0158
+2023-06-30 09:28:15 > DTC That caused the freeze frame: B190E
+2023-06-30 09:28:16 > ERRORS:
+                    > DTC: B1AF4
+                    > DTC: C1A09
+                    > DTC: C1758
+2023-06-30 09:28:18> WARNINGS: 
+                    > DTC: B15B4
+                    > DTC: U1631
+                    > DTC: B0437
+2023-06-30 09:28:20> WARNINGS: 
+                    > DTC: C01B1
+                    > DTC: P09E8
+                    > DTC: B0237
+2023-06-30 09:28:22 > DTC That caused the freeze frame: B1D78
+2023-06-30 09:28:23 > ERRORS:
+                    > DTC: C01B1
+                    > DTC: P09E8
+                    > DTC: B0237
