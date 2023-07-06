@@ -59,23 +59,24 @@ int receive_obd_message(int s, int service_type) {
 			}
 		case SERVICE_2: // Service 02
 			char* dtc = service_two(frame.data);
-			fprintf(fp, "%d-%02d-%02d %02d:%02d:%02d> DTC That caused the freeze frame: %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, dtc);
+			fprintf(fp, "%d-%02d-%02d %02d:%02d:%02d> Freeze frame;\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(fp, "               DTC > %s;\n", dtc);
 			break;
 		case SERVICE_3: // Service 03
 			char (*detected_s3)[6] = service_three_seven(s, frame.data);
-			fprintf(fp,"%d-%02d-%02d %02d:%02d:%02d> ERRORS:\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(fp,"%d-%02d-%02d %02d:%02d:%02d> ERRORS;\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			for (int i=0; i < DTC_TO_PRINT; ++i) {
 				if((detected_s3[i] != NULL) && (*detected_s3[i] != '\0'))	 {
-					fprintf(fp, "                    > DTC: %s\n",detected_s3[i]);
+					fprintf(fp, "               DTC > %s;\n",detected_s3[i]);
 				}
 			}
 			break;
 		case SERVICE_7: // Service 07
 			char (*detected_s7)[6] = service_three_seven(s, frame.data);
-			fprintf(fp, "%d-%02d-%02d %02d:%02d:%02d> WARNINGS: \n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(fp, "%d-%02d-%02d %02d:%02d:%02d> WARNINGS;\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			for (int i=0; i < DTC_TO_PRINT; ++i) {
 				if((detected_s7[i] != NULL) && (*detected_s7[i] != '\0'))	 {
-					fprintf(fp, "                    > DTC: %s\n",detected_s7[i]);
+					fprintf(fp, "               DTC > %s;\n",detected_s7[i]);
 				}
 			}
 			break;
@@ -83,6 +84,7 @@ int receive_obd_message(int s, int service_type) {
 			printf("Service not supported\n");
 			return EXIT_FAILURE;
 	}
+	fprintf(fp, "-\n");
 	fclose(fp);
 	service = 0;
   return 0;

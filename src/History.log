@@ -1,24 +1,24 @@
-2023-06-26 11:10:29 > ERRORS:
-                    > DTC: U0158
-                    > DTC: P0143
-                    > DTC: B1143
-                    > DTC: U1FFF
-                    > DTC: U0158
-2023-06-30 09:28:15 > DTC That caused the freeze frame: B190E
-2023-06-30 09:28:16 > ERRORS:
-                    > DTC: B1AF4
-                    > DTC: C1A09
-                    > DTC: C1758
-2023-06-30 09:28:18> WARNINGS: 
-                    > DTC: B15B4
-                    > DTC: U1631
-                    > DTC: B0437
-2023-06-30 09:28:20> WARNINGS: 
-                    > DTC: C01B1
-                    > DTC: P09E8
-                    > DTC: B0237
-2023-06-30 09:28:22 > DTC That caused the freeze frame: B1D78
-2023-06-30 09:28:23 > ERRORS:
-                    > DTC: C01B1
-                    > DTC: P09E8
-                    > DTC: B0237
+2023-07-06 14:23:58> WARNINGS;
+-
+2023-07-06 14:24:00> WARNINGS;
+               DTC > U0DE8;
+               DTC > P04A1;
+-
+2023-07-06 14:24:02> Freeze frame;
+               DTC > U1635;
+-
+2023-07-06 14:24:03> ERRORS;
+               DTC > B02AB;
+               DTC > B1440;
+               DTC > P1739;
+-
+2023-07-06 14:24:05> WARNINGS;
+               DTC > P04C8;
+-
+2023-07-06 14:24:07> Freeze frame;
+               DTC > C0529;
+-
+2023-07-06 14:24:08> ERRORS;
+               DTC > U14E8;
+               DTC > P09A8;
+-
