@@ -18,7 +18,6 @@
 #define SERVICE_3 0x43
 #define SERVICE_7 0x47
 #define SLEEP_TIME 1
-#define TESTING 1
 
 int socket_id = 0;
 int mil_status;
@@ -137,26 +136,21 @@ int main() {
   socket_id = setup_socket();
   signal(SIGINT, sig_handler);
   pthread_t send_t, receive_t;
-  if (TESTING){
-    printf("System running on Testing mode\n");
-    receive_obd_message(socket_id, SERVICE_3);
-  } else {
-    while(1) {
-      int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
-      execute_service(data_s1, socket_id, SERVICE_1, &send_t, &receive_t);
-      if(mil_status == 2) {
-        int data_s2[7] = {0x05, 0x02, 0x01, 0x00, 0x02, 0x00, 0x55};
-        execute_service(data_s2, socket_id, SERVICE_2, &send_t, &receive_t);
+  while(1) {
+    int data_s1[7] = {0x02, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55};
+    execute_service(data_s1, socket_id, SERVICE_1, &send_t, &receive_t);
+    if(mil_status == 2) {
+      int data_s2[7] = {0x05, 0x02, 0x01, 0x00, 0x02, 0x00, 0x55};
+      execute_service(data_s2, socket_id, SERVICE_2, &send_t, &receive_t);
 
-        int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
-        execute_service(data_s3, socket_id, SERVICE_3, &send_t, &receive_t);
-      } else if (mil_status == 0) {
-        int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
-        execute_service(data_s7, socket_id, SERVICE_7, &send_t, &receive_t);
-      }
-      sleep(SLEEP_TIME);
+      int data_s3[7] = {0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55};
+      execute_service(data_s3, socket_id, SERVICE_3, &send_t, &receive_t);
+    } else if (mil_status == 0) {
+      int data_s7[7] = {0x01, 0x07, 0x55, 0x55, 0x55, 0x55, 0x55};
+      execute_service(data_s7, socket_id, SERVICE_7, &send_t, &receive_t);
     }
-  }  
+    sleep(SLEEP_TIME);
+  }
   if (close(socket_id) < 0) {
 		perror("Error closing the Socket");
 		exit(EXIT_FAILURE);

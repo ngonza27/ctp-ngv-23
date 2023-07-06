@@ -24,11 +24,6 @@ char (*service_three_seven(int s, __u8 data[]))[6];
 	@return function execution status
 */
 int receive_obd_message(int s, int service_type) {
-	FILE *fp;
-  fp = fopen("History.log", "a+");
-	if (fp == NULL) { return EXIT_FAILURE; }
-	time_t t = time(NULL);
-	struct tm tm = *localtime(&t);
   int nbytes;
   struct can_frame frame;
   int service = 0;
@@ -47,7 +42,11 @@ int receive_obd_message(int s, int service_type) {
 			continue;
 		}
 	}
-	
+	FILE *fp;
+  fp = fopen("History.log", "a+");
+	if (fp == NULL) { return EXIT_FAILURE; }
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
 	switch (service) {
 		case SERVICE_1: // Service 01
 			int mil_is_on = service_one(frame.data);
@@ -60,11 +59,11 @@ int receive_obd_message(int s, int service_type) {
 			}
 		case SERVICE_2: // Service 02
 			char* dtc = service_two(frame.data);
-			fprintf(fp, "%d-%02d-%02d %02d:%02d:%02d > DTC That caused the freeze frame: %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, dtc);
+			fprintf(fp, "%d-%02d-%02d %02d:%02d:%02d> DTC That caused the freeze frame: %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, dtc);
 			break;
 		case SERVICE_3: // Service 03
 			char (*detected_s3)[6] = service_three_seven(s, frame.data);
-			fprintf(fp,"%d-%02d-%02d %02d:%02d:%02d > ERRORS:\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(fp,"%d-%02d-%02d %02d:%02d:%02d> ERRORS:\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			for (int i=0; i < DTC_TO_PRINT; ++i) {
 				if((detected_s3[i] != NULL) && (*detected_s3[i] != '\0'))	 {
 					fprintf(fp, "                    > DTC: %s\n",detected_s3[i]);
