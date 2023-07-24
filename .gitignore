@@ -4,3 +4,4 @@ src/*.o
 src/main
 test/can_simulator
 scripts/run_main.sh
+src/py/us-east-1/*

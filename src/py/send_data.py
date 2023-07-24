@@ -1,5 +1,4 @@
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
-from led import Led
 import logging
 import time
 import argparse
@@ -10,14 +9,6 @@ AllowedActions = ['both', 'publish', 'subscribe']
 file_path = "../History.log"
 faults = []
 fault_type = ""
-
-# Custom MQTT message callback
-def mandarDatos(client, userdata, message):
-  print("send data")
-
-def defaultCallback(client, userdata, message):
-  print("Data:", message.payload, " from", message.topic)
-
 
 # Read in command-line parameters
 parser = argparse.ArgumentParser()
@@ -30,8 +21,7 @@ parser.add_argument("-w", "--websocket", action="store_true", dest="useWebsocket
                     help="Use MQTT over WebSocket")
 parser.add_argument("-id", "--clientId", action="store", dest="clientId", default="basicPubSub",
                     help="Targeted client id")
-parser.add_argument("-t", "--topic", action="store", dest="topic", default="sdk/test/Python", help="Targeted topic")
-parser.add_argument("-t1", "--topic1", action="store", dest="topic1", default="topic/obtenerDatos", help="Target topic1")
+parser.add_argument("-t", "--topic", action="store", dest="topic", default="topic/getData", help="Targeted topic")
 parser.add_argument("-m", "--mode", action="store", dest="mode", default="both",
                     help="Operation modes: %s"%str(AllowedActions))
 parser.add_argument("-M", "--message", action="store", dest="message", default="Hello World!",
@@ -46,8 +36,6 @@ port = args.port
 useWebsocket = args.useWebsocket
 clientId = args.clientId
 topic = args.topic
-topic1 = args.topic1
-topic2 = args.topic2
 
 if args.mode not in AllowedActions:
     parser.error("Unknown --mode option %s. Must be one of %s" % (args.mode, str(AllowedActions)))
@@ -95,9 +83,6 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
-if args.mode == 'both' or args.mode == 'subscribe':
-    myAWSIoTMQTTClient.subscribe(topic, 1, defaultCallback)
-    myAWSIoTMQTTClient.subscribe(topic1, 1, mandarDatos)
 time.sleep(5)
 
 try:
@@ -119,16 +104,16 @@ try:
           if line.startswith("-"):
             if len(faults) > 0:
               if args.mode == 'both' or args.mode == 'publish':
-                  data = json.dumps({'deviceId': "rpi", "data": { 'fault': fault_type, "codes": faults}})
+                  data = json.dumps({'deviceId': "OBD-II_Dongle", "data": { 'fault': fault_type, "codes": faults}})
                   try:
-                      myAWSIoTMQTTClient.publish(topic1, data, 1)
+                      myAWSIoTMQTTClient.publish(topic, data, 1)
                   except Exception as error:
                       print('Error while sending data to DB: {}'.format(error))
                       myAWSIoTMQTTClient.connect()
                       time.sleep(10)
-                      myAWSIoTMQTTClient.publish(topic1, data, 1)
+                      myAWSIoTMQTTClient.publish(topic, data, 1)
               if args.mode == 'publish':
-                  print('Published topic %s: %s\n' % (topic1, data))
+                  print('Published topic %s: %s\n' % (topic, data))
               fault_type, faults = "", []
           else:
               sidx = line.find('>') + 1
