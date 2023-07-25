@@ -1,0 +1,16 @@
+Notes:
+  IoT Core
+    Endpoint: {id}-ats.iot.us-east-1.amazonaws.com (found in settings section)
+    Prerequisites: install AWSIoTPythonSDK and awscliv2:
+      - pip install AWSIoTPythonSDK
+      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o      "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
+
+    1. Create IoT policy in IAM
+    2. Create a certificate
+    3. Create IoT policy
+    4. Test communication, and account between device and AWS IoT: aws --region us-east-1 iot-data publish --topic "myTopic" --cli-binary-format raw-in-base64-out --payload "{\"uptime\": 123, \"temp\": 44, \"humidity\": 33}"
+    5. Start the code:
+    python3 send_data.py --endpoint {id}-ats.iot.us-east-1.amazonaws.com --r ./us-east-1/AmazonRootCA1.pem --cert ./us-east-1/certificate.pem.crt --key ./us-east-1/private.pem.key
+    6. Cualesservicios se pueden integrar: DynamoDB, Lambda, Apache Kafka, S3, HTTP Endpoint, among others
