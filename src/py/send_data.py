@@ -87,42 +87,39 @@ time.sleep(5)
 
 try:
   with open(file_path, 'r') as file:
-    line_number = 0  
-    lines = file.readlines()
-    total_lines = len(lines)
-
+    idx = 0  
     while True:
       file.seek(0)  
-      for _ in range(line_number):
+      for i in range(idx):
         file.readline()
 
       new_lines = file.readlines()
       if new_lines:
-        for line in new_lines:
-          line_number += 1 
-          line = line.strip()
-          if line.startswith("-"):
+        for l in new_lines:
+          idx += 1 
+          l = l.strip()
+          if l.startswith("-"):
             if len(faults) > 0:
               if args.mode == 'both' or args.mode == 'publish':
-                  data = json.dumps({'deviceId': "OBD-II_Dongle", "data": { 'fault': fault_type, "codes": faults}})
+                  data = json.dumps({'deviceID': "OBD-II_Dongle", "data": { 'fault': fault_type, "codes": faults}})
                   try:
-                      myAWSIoTMQTTClient.publish(topic, data, 1)
+                    myAWSIoTMQTTClient.publish(topic, data, 1)
                   except Exception as error:
-                      print('Error while sending data to DB: {}'.format(error))
-                      myAWSIoTMQTTClient.connect()
-                      time.sleep(10)
-                      myAWSIoTMQTTClient.publish(topic, data, 1)
+                    print('Error while sending data to DB: {}'.format(error))
+                    myAWSIoTMQTTClient.connect()
+                    time.sleep(5)
+                    myAWSIoTMQTTClient.publish(topic, data, 1)
               if args.mode == 'publish':
-                  print('Published topic %s: %s\n' % (topic, data))
+                print('Published topic %s: %s\n' % (topic, data))
               fault_type, faults = "", []
           else:
-              sidx = line.find('>') + 1
-              eidx = line.find(';')
-              if line.startswith('DTC'):
-                dtc = line[sidx:eidx].strip()
+              sidx = l.find('>') + 1
+              eidx = l.find(';')
+              if l.startswith('DTC'):
+                dtc = l[sidx:eidx].strip()
                 faults.append(dtc)
-              elif line.startswith('20'):
-                fault_type = line[sidx:eidx].strip()
+              elif l.startswith('20'):
+                fault_type = l[sidx:eidx].strip()
       else:
         time.sleep(0.5)
         continue
